@@ -1,0 +1,27 @@
+{
+  "name": "strider-bw_labs",
+  "version": "0.0.0",
+  "description": "Support for custom prepare, test and deploy in Strider via scritps in directory .build",
+  "main": "index.js",
+  "scripts": {
+    "test": "jshint && mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/"
+  },
+  "keywords": [
+    "strider"
+  ],
+  "author": "avbel",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "strider": {
+    "id": "bw_labs",
+    "type": "job",
+    "title": "Bandwidth Labs",
+    "worker": "worker.js",
+    "webapp": "webapp.js",
+    "config": false
+  }
+}
