@@ -2,7 +2,25 @@ var path = require("path");
 var fs = require("fs");
 var _ = require("lodash");
 var fsTools = require("fs-tools");
+var crypto = require("crypto");
+var yaml = require("js-yaml");
 
+
+
+var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+var charlen = chars.length;
+
+
+function uid (length){
+  if(!length) length = 32;
+  var index, i, buf = crypto.randomBytes(length);
+  var result = [];
+  for(i = 0; i < length; i ++){
+    index = (buf.readUInt8(i) % charlen);
+    result.push(chars[index]);
+  }
+  return result.join('');
+}
 
 function runCommand(command) {
   return function(context, done){
@@ -55,6 +73,23 @@ function buildAppYml(config, context, callback){
   }
 }
 
+function buildKeysYml(config, context, callback){
+  if(!config.createKeysYml){
+    return callback();
+  }
+  var keyFile = path.join(context.dataDir, "config", "keys.yml");
+  if(fs.existsSync(keyFile)){
+    context.comment("File keys.yml is exists already. Do nothing.");
+    return callback();
+  }
+  context.comment("Generating keys.yml.");
+  var keys = {
+    cookie: [uid(), uid(), uid(), uid(), uid()],
+    pepper: uid()
+  };
+  fs.writeFile(keyFile, yaml.safeDump(keys), callback);
+}
+
 
 module.exports = {
   init: function (config, context, done) {
@@ -68,7 +103,12 @@ module.exports = {
             if(err){
               return done(err);
             }
-            prepare(context, done);
+            buildKeysYml(config, context, function(err){
+              if(err){
+                return done(err);
+              }
+              prepare(context, done);
+            });
           });
         });
       },

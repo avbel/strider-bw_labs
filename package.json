@@ -25,5 +25,8 @@
     "config": {
       "controller": "BwLabsCtrl"
     }
+  },
+  "dependencies": {
+    "js-yaml": "^3.0.2"
   }
 }

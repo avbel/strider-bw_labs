@@ -9,7 +9,7 @@ app.controller('BwLabsCtrl', ['$scope', function ($scope) {
   $scope.save = function () {
     $scope.saving = true;
     $scope.pluginConfig('bw_labs', $scope.config, function () {
-      $scope.success('Saved app.yml template');
+      $scope.success('Saved');
       $scope.saving = false;
     });
   };
