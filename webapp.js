@@ -1,5 +1,8 @@
 module.exports = {
   config: {
-    appYmlTemplate: String
+    appYmlTemplate: String,
+    deploymentAppYmlTemplate: String,
+    createKeysYml: Boolean,
+    deploySameAppYml: Boolean
   }
 };

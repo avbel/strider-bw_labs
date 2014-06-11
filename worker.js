@@ -42,7 +42,7 @@ function runCommand(command) {
   };
 }
 
-function buildAppYml(config, context, callback){
+function buildAppYml(appYmlTemplate, context, callback){
   var configFile = path.join(context.dataDir, "config", "app.yml");
   var branch = (context.job.project.branches.filter(function(b){ return b.name == context.job.ref.branch;}))[0];
   var k, env = _.clone(process.env);
@@ -53,11 +53,11 @@ function buildAppYml(config, context, callback){
        }
     });
   }
-  if((config.appYmlTemplate || "").trim().length > 0){
+  if((appYmlTemplate || "").trim().length > 0){
     var text;
     context.comment("Building app.yml from template");
     try{
-      text = _.template(config.appYmlTemplate, {env: env});
+      text = _.template(appYmlTemplate, {env: env});
     }
     catch(err){
       return callback(err);
@@ -95,11 +95,12 @@ module.exports = {
   init: function (config, context, done) {
     var config = config || {};
     var prepare = runCommand("prepare");
+    var deploy = runCommand("deploy");
     done(null, {
       environment: runCommand("environment"),
       prepare: function(context, done){
         fsTools.remove(path.join(context.dataDir, "node_modules"), function(){
-          buildAppYml(config, context, function(err){
+          buildAppYml(config.appYmlTemplate, context, function(err){
             if(err){
               return done(err);
             }
@@ -113,7 +114,21 @@ module.exports = {
         });
       },
       test: runCommand("test"),
-      deploy: runCommand("deploy"),
+      deploy: function(context, done){
+        fs.unlink(path.join(context.dataDir, "config", "keys.yml"), function(){
+          buildAppYml(config.deploySameAppYml?config.appYmlTemplate:config.deploymentAppYmlTemplate, context, function(err){
+            if(err){
+              return done(err);
+            }
+            buildKeysYml(config, context, function(err){
+              if(err){
+                return done(err);
+              }
+              deploy(context, done);
+            });
+          });
+        });
+      },
       cleanup: runCommand("cleanup")
     })
   }
