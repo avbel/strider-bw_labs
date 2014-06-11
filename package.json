@@ -1,6 +1,6 @@
 {
   "name": "strider-bw_labs",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Support for custom prepare, test and deploy in Strider via scritps in directory .build",
   "main": "index.js",
   "scripts": {
