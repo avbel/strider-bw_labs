@@ -99,17 +99,15 @@ module.exports = {
     done(null, {
       environment: runCommand("environment"),
       prepare: function(context, done){
-        fsTools.remove(path.join(context.dataDir, "node_modules"), function(){
-          buildAppYml(config.appYmlTemplate, context, function(err){
+        buildAppYml(config.appYmlTemplate, context, function(err){
+          if(err){
+            return done(err);
+          }
+          buildKeysYml(config, context, function(err){
             if(err){
               return done(err);
             }
-            buildKeysYml(config, context, function(err){
-              if(err){
-                return done(err);
-              }
-              prepare(context, done);
-            });
+            prepare(context, done);
           });
         });
       },
